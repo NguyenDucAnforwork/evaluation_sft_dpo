@@ -230,17 +230,21 @@ async def evaluate_submission(
     }
     
     logger.info("Starting test evaluation")
-    test_data_filepath = await download_s3_file(task.test_data, save_path="/workspace/input_data")
+    # test_data_filepath = await download_s3_file(task.test_data, save_path="/workspace/input_data")
+    # Old code, failed to download, link expired
+    
+    # new code, replace path with local test data
+    test_data_filepath = "/workspace/input_data/test_data.json"
 
     test_results = run_evaluation_text(
         dataset=test_data_filepath,
         **evaluation_params
     )
 
-    try:
-        os.remove(test_data_filepath)
-    except Exception as e:
-        logger.warning(f"Failed to remove test data file {test_data_filepath}: {e}")
+    # try:
+    #     os.remove(test_data_filepath)
+    # except Exception as e:
+    #     logger.warning(f"Failed to remove test data file {test_data_filepath}: {e}")
 
     test_eval_results = test_results.results
     task.model_params_count = test_results.base_model_params_count
@@ -271,7 +275,8 @@ async def evaluate_submission(
 
     if top_4_repos:
         logger.info(f"Evaluating synthetic data for top {len(top_4_repos)} models")
-        synthetic_data_filepath = await download_s3_file(task.synthetic_data, save_path="/workspace/input_data")
+        # synthetic_data_filepath = await download_s3_file(task.synthetic_data, save_path="/workspace/input_data")
+        synthetic_data_filepath = "/workspace/input_data/synthetic_data.json"
 
         synth_results = run_evaluation_text(
             dataset=synthetic_data_filepath,
@@ -280,10 +285,10 @@ async def evaluate_submission(
             synthetic=True
         )
 
-        try:
-            os.remove(synthetic_data_filepath)
-        except Exception as e:
-            logger.warning(f"Failed to remove synthetic data file {synthetic_data_filepath}: {e}")
+        # try:
+        #     os.remove(synthetic_data_filepath)
+        # except Exception as e:
+        #     logger.warning(f"Failed to remove synthetic data file {synthetic_data_filepath}: {e}")
 
         synth_eval_results = synth_results.results
 
